@@ -1,8 +1,33 @@
+require("dotenv").config();
 const axios = require("axios");
-const key = "abfe510dc62eecff75c7e32beea72aeb";
-const locale = "Itu";
-const url = `http://api.openweathermap.org/data/2.5/forecast?q=${locale}&appid=${key}`;
 
-axios.get(url).then((result) => {
-    console.log(result);
-});
+const { PROTOCOL, BASE_URL, APPID, UNITS, Q, LANGUAGE, CNT } = process.env;
+
+const url = `${PROTOCOL}://${BASE_URL}?q=${Q}&appid=${APPID}&cnt=${CNT}&lang=${LANGUAGE}&units=${UNITS}`;
+
+// const res = axios.get(url);
+
+axios
+    .get(url)
+    .then((res) => {
+        return res.data;
+    })
+    .then((res) => {
+        return res["list"];
+    })
+    .then((list) => {
+        for (let i = 0; i < list.length; i++) {
+            // console.log(`item ${i}`);
+            let { temp_max, temp_min } = list[i].main;
+            let { description } = list[i].weather[0];
+            // console.log(`Min: ${temp_min}   Máx: ${temp_max}`);
+            // console.log(`Descrição ${list[i].weather[0].description}`);
+            // console.log(list[i].dt_txt);
+
+            console.log(`
+            ${list[i].dt_txt}
+            ${description}
+            Min: ${Math.round(temp_min)}   Máx: ${Math.round(temp_max)}
+            `);
+        }
+    });
